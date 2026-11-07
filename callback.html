@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<title>FinanzMaster – Bankverbindung</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f2ed; color: #1f1e1a; padding: 16px; }
+  .box { max-width: 460px; background: #fbfaf7; border: 1px solid #e3dfd5; border-radius: 14px; padding: 28px; }
+  h1 { font-size: 18px; margin: 0 0 10px; }
+  p { font-size: 14px; line-height: 1.55; margin: 0 0 12px; color: #4b4940; }
+  a.btn { display: inline-block; background: #1f1e1a; color: #fff; text-decoration: none; padding: 9px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; }
+  small { color: #7a7769; font-size: 12px; }
+  @media (prefers-color-scheme: dark) { body { background: #1a1916; color: #f1efe8; } .box { background: #23211d; border-color: #3a3730; } p { color: #c9c5b8; } a.btn { background: #f1efe8; color: #1a1916; } small { color: #9b978a; } }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>Weiter zu FinanzMaster …</h1>
+  <p id="text">Die Bank hat Ihre Freigabe gemeldet. Sie werden jetzt zu FinanzMaster auf diesem Computer weitergeleitet.</p>
+  <p id="aktion" hidden><a class="btn" id="link" href="#">Zu FinanzMaster</a></p>
+  <p><small>Diese Seite speichert nichts und enthält keine Daten. Sie reicht nur die Antwort der Bank im Browser an FinanzMaster (http://127.0.0.1:8787) auf Ihrem eigenen Computer weiter. FinanzMaster muss dazu gestartet sein.</small></p>
+</div>
+<script>
+  // Nur diese Angaben der Bank werden weitergereicht; alles andere wird verworfen.
+  var erlaubt = ['code', 'state', 'error'];
+  var port = 8787;
+  var q = new URLSearchParams(window.location.search);
+  var out = new URLSearchParams();
+  erlaubt.forEach(function (k) { var v = q.get(k); if (v) out.set(k, v); });
+  var ziel = 'http://127.0.0.1:' + port + '/lokal/bank-rueckleitung?' + out.toString();
+  if (!out.get('code') && !out.get('error')) {
+    document.getElementById('text').textContent = 'Es fehlen Angaben der Bank. Bitte die Bankverbindung in FinanzMaster erneut starten.';
+  } else {
+    document.getElementById('link').href = ziel;
+    setTimeout(function () { window.location.replace(ziel); }, 300);
+    setTimeout(function () {
+      document.getElementById('text').textContent = 'Falls nichts passiert: FinanzMaster ist vielleicht nicht gestartet. Bitte starten und dann auf den Knopf klicken.';
+      document.getElementById('aktion').hidden = false;
+    }, 4000);
+  }
+</script>
+</body>
+</html>
